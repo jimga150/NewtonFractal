@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <complex>
+#include <cfloat>
 
 #include <QMainWindow>
 #include <QGraphicsScene>
@@ -25,9 +26,27 @@ public:
 
     void updateImage();
 
+    uint findRoot(complex x);
+
     complex qpointfToComplex(QPointF p);
 
     QPointF complexToQPointF(complex c);
+
+    void prepFunctionDerivative();
+
+    complex doFunction(complex x);
+
+    complex doFunctionDerivative(complex x);
+
+    std::vector<std::vector<complex>> getSets(std::vector<complex> list, uint set_size);
+
+    uint nCr(uint n, uint r);
+
+    uint factorial(uint n);
+
+    void printList(std::vector<complex> list);
+
+    void print2DList(std::vector<std::vector<complex>> list2d);
 
 
     CustomScene scene;
@@ -42,11 +61,15 @@ public:
 
     QGraphicsPixmapItem* pixmap_item;
 
-
-
     std::vector<complex> roots;
     bool root_is_selected = false;
     uint current_root_selected = 0;
+
+    std::vector<complex> derivative_coefs;
+
+    int num_iterations = 12;
+
+    std::vector<QColor> colors;
 
 public slots:
     void clicked(QPoint p);
