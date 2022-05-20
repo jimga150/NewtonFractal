@@ -7,8 +7,18 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QPainter>
+#include <QtConcurrent>
 
 #include "CustomScene.h"
+
+struct line_item_struct {
+    int row;
+    QRgb* line_ptr;
+    line_item_struct(int row, QRgb* line_ptr){
+        this->row = row;
+        this->line_ptr = line_ptr;
+    }
+};
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,6 +35,8 @@ public:
     ~MainWindow();
 
     void updateImage();
+
+    void updateImageLine(int y, QRgb* lines);
 
     uint findRoot(complex x);
 
@@ -66,8 +78,9 @@ public:
     uint current_root_selected = 0;
 
     std::vector<complex> derivative_coefs;
+    std::vector<complex> fxn_coefs;
 
-    int num_iterations = 12;
+    int num_iterations = 3;
 
     std::vector<QColor> colors;
 
@@ -81,4 +94,5 @@ public slots:
 private:
     Ui::MainWindow *ui;
 };
+
 #endif // MAINWINDOW_H

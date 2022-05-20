@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QElapsedTimer>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -70,20 +72,33 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateImage(){
 
+//    QElapsedTimer timer;
+//    timer.start();
+
     this->prepFunctionDerivative();
+
+//    printf("prep function derivative took %lld ns\n", timer.nsecsElapsed());
+//    timer.restart();
 
     this->current_img.fill(Qt::GlobalColor::black);
 
-    for (int y = 0; y < this->current_img.height(); y = y + 4){
-        for (int x = 0; x < this->current_img.width(); x = x + 4){
-            QPointF pt(x, y);
-            pt = this->ui_to_coord_tform.map(pt);
-            complex start = this->qpointfToComplex(pt);
-            uint closest_root = this->findRoot(start);
-//            printf("closest root: %u\n", closest_root);
-            this->current_img.setPixel(x, y, this->colors.at(closest_root).rgb());
-        }
+    QList<QFuture<void>> threads;
+
+    for (int y = 0; y < this->current_img.height(); y = ++y){
+
+        QRgb* line = reinterpret_cast<QRgb*>(this->current_img.scanLine(y));
+
+        QFuture<void> thread = QtConcurrent::run(&MainWindow::updateImageLine, this, y, line);
+        threads.append(thread);
     }
+
+    for (QFuture<void> thread : threads){
+        thread.waitForFinished();
+    }
+//    QtConcurrent::blockingMap(lines_to_process, &MainWindow::updateImageLine);
+
+//    printf("fractal fill took %lld ns\n", timer.nsecsElapsed());
+//    timer.restart();
 
     QPainter painter(&this->current_img);
 
@@ -102,12 +117,52 @@ void MainWindow::updateImage(){
     painter.end();
 
     this->pixmap_item->setPixmap(QPixmap::fromImage(this->current_img));
+
+//    printf("mark root locations took %lld ns\n", timer.nsecsElapsed());
+//    timer.restart();
+}
+
+void MainWindow::updateImageLine(int y, QRgb* lines){
+
+    for (int x = 0; x < this->current_img.width(); ++x){
+
+        QPointF pt(x, y);
+        pt = this->ui_to_coord_tform.map(pt);
+        complex start = this->qpointfToComplex(pt);
+
+//            printf("\tpoint prep took %lld ns\n", timer.nsecsElapsed());
+//            timer.restart();
+
+        uint closest_root = this->findRoot(start);
+//            printf("closest root: %u\n", closest_root);
+
+//            printf("\troot finding took %lld ns\n", timer.nsecsElapsed());
+//            timer.restart();
+
+//            this->current_img.setPixel(x, y, this->colors.at(closest_root).rgb());
+        lines[x] = this->colors.at(closest_root).rgb();
+
+//            printf("\tpixel setting took %lld ns\n", timer.nsecsElapsed());
+//            timer.restart();
+    }
 }
 
 uint MainWindow::findRoot(complex x){
+
+//    QElapsedTimer timer;
+//    timer.start();
+
     for (int i = 0; i < this->num_iterations; ++i){
-        x = x - this->doFunction(x)/this->doFunctionDerivative(x);
+        complex x1 = x - this->doFunction(x)/this->doFunctionDerivative(x);
+        if (isfinite(x1.real()) && isfinite(x1.imag())){
+            x = x1;
+        } else {
+            break;
+        }
     }
+
+//    printf("Newtons method (%d iters) took %llu ns; ", this->num_iterations, timer.nsecsElapsed());
+//    timer.restart();
 
     QPointF root_guess_pt = this->complexToQPointF(x);
     double min_dist = DBL_MAX;
@@ -123,6 +178,8 @@ uint MainWindow::findRoot(complex x){
             closest_root = i;
         }
     }
+
+//    printf("Closest root finding took %llu ns\n", timer.nsecsElapsed());
 
     return closest_root;
 }
@@ -163,7 +220,12 @@ void MainWindow::dragged(QPoint p){
 
     this->roots.at(this->current_root_selected) = qpointfToComplex(coord);
 
+    QElapsedTimer timer;
+    timer.start();
+
     this->updateImage();
+
+    printf("update image took %lld ns\n", timer.nsecsElapsed());
 }
 
 void MainWindow::released(){
@@ -218,22 +280,32 @@ void MainWindow::prepFunctionDerivative(){
 }
 
 complex MainWindow::doFunction(complex x){
-    complex ans = 1;
-    for (complex root : this->roots){
-        ans *= (x - root);
+
+//    QElapsedTimer timer;
+//    timer.start();
+
+    complex ans = (x - this->roots.back());
+    for (int i = this->roots.size() - 2; i >= 0; --i){
+        ans *= (x - this->roots.at(i));
     }
+
+//    printf("\tdoFunction took %llu ns\n", timer.nsecsElapsed());
+
     return ans;
 }
 
 complex MainWindow::doFunctionDerivative(complex x){
-    complex ans = 0;
-    for (uint power = 0; power < this->derivative_coefs.size(); ++power){
-        complex term = this->derivative_coefs.at(power);
-        for (uint i = 0; i < power; ++i){
-            term *= x;
-        }
-        ans += term;
+
+//    QElapsedTimer timer;
+//    timer.start();
+
+    complex ans = this->derivative_coefs.back();
+    for (int power = this->derivative_coefs.size()-2; power >= 0; --power){
+        ans = ans*x + this->derivative_coefs.at(power);
     }
+
+//    printf("\tdoFunctionDerivative took %llu ns\n", timer.nsecsElapsed());
+
     return ans;
 }
 
