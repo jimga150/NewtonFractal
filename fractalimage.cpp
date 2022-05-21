@@ -72,27 +72,7 @@ void FractalImage::updateImageLine(int y){
     int end = (y+1)*this->image.width();
 
     for (int i = first; i < end; ++i){
-
         this->fractal_pixels.at(i).update();
-
-//        QPointF pt(i, y);
-//        pt = this->ui_to_coord_tform.map(pt);
-//        complex start = qpointfToComplex(pt);
-
-////            printf("\tpoint prep took %lld ns\n", timer.nsecsElapsed());
-////            timer.restart();
-
-//        uint closest_root = this->poly_fxn.findRoot(start);
-////            printf("closest root: %u\n", closest_root);
-
-////            printf("\troot finding took %lld ns\n", timer.nsecsElapsed());
-////            timer.restart();
-
-////            this->current_img.setPixel(x, y, this->colors.at(closest_root).rgb());
-//        lines[i] = this->colors.at(closest_root).rgb();
-
-////            printf("\tpixel setting took %lld ns\n", timer.nsecsElapsed());
-////            timer.restart();
     }
 }
 
