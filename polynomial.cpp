@@ -17,6 +17,11 @@ void Polynomial::changeNumRoots(int num_roots){
     }
 }
 
+void Polynomial::changeNumIters(int num_iters)
+{
+    this->num_iterations = num_iters;
+}
+
 uint Polynomial::findRoot(complex x){
 
 //    QElapsedTimer timer;

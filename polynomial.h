@@ -15,6 +15,8 @@ public:
 
     void changeNumRoots(int num_roots);
 
+    void changeNumIters(int num_iters);
+
     uint findRoot(complex x);
 
     void prepFunctionDerivative();

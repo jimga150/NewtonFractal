@@ -25,6 +25,8 @@ public:
 
     void numRootsChanged(int nr);
 
+    void numItersChanged(int ni);
+
     void printAvgUpdateTime();
 
 
@@ -51,6 +53,10 @@ private slots:
     void on_num_roots_hslider_sliderReleased();
 
     void on_num_roots_spinbox_editingFinished();
+
+    void on_num_iter_hslider_sliderReleased();
+
+    void on_num_iter_spinbox_editingFinished();
 
 private:
     Ui::MainWindow *ui;

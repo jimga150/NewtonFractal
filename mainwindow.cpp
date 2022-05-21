@@ -114,7 +114,6 @@ void MainWindow::released(){
 
 void MainWindow::on_num_roots_hslider_sliderReleased()
 {
-    printf("slider released\n");
     int new_val = this->ui->num_roots_hslider->value();
     this->ui->num_roots_spinbox->setValue(new_val);
     this->numRootsChanged(new_val);
@@ -123,7 +122,6 @@ void MainWindow::on_num_roots_hslider_sliderReleased()
 
 void MainWindow::on_num_roots_spinbox_editingFinished()
 {
-    printf("spinbox editing finished\n");
     int new_val = this->ui->num_roots_spinbox->value();
     this->ui->num_roots_hslider->setValue(new_val);
     this->numRootsChanged(new_val);
@@ -132,6 +130,28 @@ void MainWindow::on_num_roots_spinbox_editingFinished()
 void MainWindow::numRootsChanged(int nr){
     this->printAvgUpdateTime();
     this->fractal.poly_fxn.changeNumRoots(nr); //TODO: dont expose member instances, use getters and setters
+    this->updateImage();
+}
+
+
+void MainWindow::on_num_iter_hslider_sliderReleased()
+{
+    int new_val = this->ui->num_iter_hslider->value();
+    this->ui->num_iter_spinbox->setValue(new_val);
+    this->numItersChanged(new_val);
+}
+
+
+void MainWindow::on_num_iter_spinbox_editingFinished()
+{
+    int new_val = this->ui->num_iter_spinbox->value();
+    this->ui->num_iter_hslider->setValue(new_val);
+    this->numItersChanged(new_val);
+}
+
+void MainWindow::numItersChanged(int ni){
+    this->printAvgUpdateTime();
+    this->fractal.poly_fxn.changeNumIters(ni); //TODO: dont expose member instances, use getters and setters
     this->updateImage();
 }
 
