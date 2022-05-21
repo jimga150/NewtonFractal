@@ -12,12 +12,10 @@ FractalImage::FractalImage(QObject *parent)
     Q_ASSERT(this->coord_to_ui_tform.isInvertible());
     this->ui_to_coord_tform = this->coord_to_ui_tform.inverted();
 
-    this->colors.push_back(QColor(207, 73, 20));
-    this->colors.push_back(QColor(249, 172, 59));
-    this->colors.push_back(QColor(116, 139, 50));
-    this->colors.push_back(QColor(152, 89, 20));
-    this->colors.push_back(QColor(207, 178, 132));
-    this->colors.push_back(QColor(44, 116, 139));
+    int h_step = 360/10;
+    for (int i = 0; i < 10; ++i){ //TODO: make max roots a constant
+        this->colors.push_back(QColor::fromHsv(i*h_step, 150, 200));
+    }
 
     for (int y = 0; y < this->image.height(); ++y){
 

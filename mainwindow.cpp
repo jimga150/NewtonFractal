@@ -23,14 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    if (this->update_times_ns.size() > 0){
-        double avg_time_ns = 0;
-        for (unsigned long long time_ns : this->update_times_ns){
-            avg_time_ns += time_ns*1.0/this->update_times_ns.size();
-        }
-        printf("Average update was %f ns long\n", avg_time_ns);
-    }
-
+    this->printAvgUpdateTime();
     delete ui;
 }
 
@@ -60,7 +53,19 @@ void MainWindow::updateImage(){
 
     unsigned long long nanos = timer.nsecsElapsed();
     this->update_times_ns.push_back(nanos);
-    printf("update image took %lld ns\n", nanos);
+//    printf("update image took %lld ns\n", nanos);
+}
+
+void MainWindow::printAvgUpdateTime(){
+    if (this->update_times_ns.size() > 0){
+        double avg_time_ns = 0;
+        for (unsigned long long time_ns : this->update_times_ns){
+            avg_time_ns += time_ns*1.0/this->update_times_ns.size();
+        }
+        printf("Average update was %f ns long\n", avg_time_ns);
+    }
+    this->update_times_ns.clear();
+    fflush(stdout);
 }
 
 void MainWindow::clicked(QPoint p){
@@ -106,3 +111,27 @@ void MainWindow::released(){
 //    printf("mouse released\n");
 //    fflush(stdout);
 }
+
+void MainWindow::on_num_roots_hslider_sliderReleased()
+{
+    printf("slider released\n");
+    int new_val = this->ui->num_roots_hslider->value();
+    this->ui->num_roots_spinbox->setValue(new_val);
+    this->numRootsChanged(new_val);
+}
+
+
+void MainWindow::on_num_roots_spinbox_editingFinished()
+{
+    printf("spinbox editing finished\n");
+    int new_val = this->ui->num_roots_spinbox->value();
+    this->ui->num_roots_hslider->setValue(new_val);
+    this->numRootsChanged(new_val);
+}
+
+void MainWindow::numRootsChanged(int nr){
+    this->printAvgUpdateTime();
+    this->fractal.poly_fxn.changeNumRoots(nr); //TODO: dont expose member instances, use getters and setters
+    this->updateImage();
+}
+

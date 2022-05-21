@@ -13,6 +13,8 @@ class Polynomial
 public:
     Polynomial();
 
+    void changeNumRoots(int num_roots);
+
     uint findRoot(complex x);
 
     void prepFunctionDerivative();

@@ -2,8 +2,14 @@
 
 Polynomial::Polynomial()
 {
-    int num_roots = 5;
+    this->changeNumRoots(5);
+}
+
+void Polynomial::changeNumRoots(int num_roots){
+
+    this->roots.clear();
     double angle_step_rad = 2*M_PI/num_roots;
+
     for (int i = 0; i < num_roots; ++i){
         double angle_rad = i*angle_step_rad;
         QPointF pt(cos(angle_rad), sin(angle_rad));
