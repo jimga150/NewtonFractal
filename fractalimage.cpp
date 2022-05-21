@@ -49,18 +49,24 @@ void FractalImage::updateImage(){
 
 //    this->image.fill(Qt::GlobalColor::black);
 
-//    QList<QFuture<void>> threads;
+#ifdef USE_RUN
 
-//    for (int y = 0; y < this->image.height(); y = ++y){
-//        QFuture<void> thread = QtConcurrent::run(&FractalImage::updateImageLine, this, y);
-//        threads.append(thread);
-//    }
+    QList<QFuture<void>> threads;
 
-//    for (QFuture<void> thread : threads){
-//        thread.waitForFinished();
-//    }
+    for (int y = 0; y < this->image.height(); y = ++y){
+        QFuture<void> thread = QtConcurrent::run(&FractalImage::updateImageLine, this, y);
+        threads.append(thread);
+    }
+
+    for (QFuture<void> thread : threads){
+        thread.waitForFinished();
+    }
+
+#elif defined (USE_MAP)
 
     QtConcurrent::blockingMap(this->fractal_pixels, &FractalPixel::update);
+
+#endif
 
 //    printf("fractal fill took %lld ns\n", timer.nsecsElapsed());
 //    timer.restart();

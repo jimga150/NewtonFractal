@@ -11,6 +11,14 @@
 #include "fractalpixel.h"
 #include "polynomial.h"
 
+#define USE_MAP
+
+#ifndef USE_MAP
+
+#define USE_RUN
+
+#endif
+
 class FractalImage : public QObject
 {
     Q_OBJECT
