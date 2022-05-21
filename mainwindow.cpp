@@ -23,6 +23,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    if (this->update_times_ns.size() > 0){
+        double avg_time_ns = 0;
+        for (unsigned long long time_ns : this->update_times_ns){
+            avg_time_ns += time_ns*1.0/this->update_times_ns.size();
+        }
+        printf("Average update was %f ns long\n", avg_time_ns);
+    }
+
     delete ui;
 }
 
@@ -40,8 +48,8 @@ void MainWindow::updateImage(){
 
     painter.setTransform(this->fractal.coord_to_ui_tform);
 
-    for (complex r : this->fractal.roots){
-        QPointF center = this->fractal.complexToQPointF(r);
+    for (complex r : this->fractal.poly_fxn.roots){
+        QPointF center = complexToQPointF(r);
         painter.drawEllipse(center, 0.1, 0.1);
 //        printf("Drawing circle at (%f, %f)\n", center.x(), center.y());
     }
@@ -50,7 +58,9 @@ void MainWindow::updateImage(){
 
     this->pixmap_item->setPixmap(QPixmap::fromImage(this->fractal.image));
 
-    printf("update image took %lld ns\n", timer.nsecsElapsed());
+    unsigned long long nanos = timer.nsecsElapsed();
+    this->update_times_ns.push_back(nanos);
+    printf("update image took %lld ns\n", nanos);
 }
 
 void MainWindow::clicked(QPoint p){
@@ -62,9 +72,9 @@ void MainWindow::clicked(QPoint p){
 
     this->root_is_selected = false;
 
-    for (uint i = 0; i < this->fractal.roots.size(); ++i){
-        complex r = this->fractal.roots.at(i);
-        QPointF root_pt = this->fractal.complexToQPointF(r);
+    for (uint i = 0; i < this->fractal.poly_fxn.roots.size(); ++i){
+        complex r = this->fractal.poly_fxn.roots.at(i);
+        QPointF root_pt = complexToQPointF(r);
         double x_diff = root_pt.x() - coord.x();
         double y_diff = root_pt.y() - coord.y();
         double dist = sqrt(x_diff*x_diff + y_diff*y_diff);
@@ -87,7 +97,7 @@ void MainWindow::dragged(QPoint p){
     QPointF pf = p;
     QPointF coord = this->fractal.ui_to_coord_tform.map(pf);
 
-    this->fractal.roots.at(this->current_root_selected) = fractal.qpointfToComplex(coord);
+    this->fractal.poly_fxn.roots.at(this->current_root_selected) = qpointfToComplex(coord);
 
     this->updateImage();
 }

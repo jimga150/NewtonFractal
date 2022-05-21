@@ -33,6 +33,8 @@ public:
     bool root_is_selected = false;
     uint current_root_selected = 0;
 
+    std::vector<unsigned long long> update_times_ns;
+
 
 public slots:
     void clicked(QPoint p);
