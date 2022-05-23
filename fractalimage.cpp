@@ -4,6 +4,8 @@ FractalImage::FractalImage(QObject *parent)
     : QObject{parent}
 {
     this->setImageSize(QSize(500, 500));
+
+    this->generateColors();
 }
 
 void FractalImage::setImageSize(QSize size){
@@ -12,10 +14,6 @@ void FractalImage::setImageSize(QSize size){
 
     this->setScale(1);
     this->setCenter(complex(0, 0));
-
-    this->generateColors();
-
-    this->updateImage();
 }
 
 void FractalImage::updateImage(){

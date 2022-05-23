@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     common.cpp \
+    customgraphicsview.cpp \
     fractalimage.cpp \
     fractalpixel.cpp \
     main.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
 
 HEADERS += \
     common.h \
+    customgraphicsview.h \
     customscene.h \
     fractalimage.h \
     fractalpixel.h \

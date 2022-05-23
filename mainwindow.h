@@ -74,6 +74,8 @@ private slots:
 
     void on_center_imag_spinbox_valueChanged(double arg1);
 
+    void imageResized(QSize size);
+
 private:
     Ui::MainWindow *ui;
 };

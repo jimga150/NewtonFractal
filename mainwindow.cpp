@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&this->scene, &CustomScene::mouseDraggedTo, this, &MainWindow::dragged);
     connect(&this->scene, &CustomScene::mouseReleased, this, &MainWindow::released);
 
+    connect(this->ui->graphicsView, &CustomGraphicsView::resized, this, &MainWindow::imageResized);
+
     this->generateRootSpinBoxes();
     this->updateImage();
 
@@ -269,3 +271,7 @@ void MainWindow::on_center_imag_spinbox_valueChanged(double arg1){
     this->updateImage();
 }
 
+void MainWindow::imageResized(QSize size){
+    this->fractal.setImageSize(size);
+    this->updateImage();
+}
