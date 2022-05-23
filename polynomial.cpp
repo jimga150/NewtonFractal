@@ -28,8 +28,8 @@ uint Polynomial::findRoot(complex x){
 //    timer.start();
 
     for (int i = 0; i < this->num_iterations; ++i){
-        complex x1 = x - this->doFunction(x)/this->doFunctionDerivative(x);
-//        complex x1 = x - this->doFunctionOverDeriv(x);
+//        complex x1 = x - this->doFunction(x)/this->doFunctionDerivative(x);
+        complex x1 = x - this->doFunctionOverDeriv(x);
         if (isfinite(x1.real()) && isfinite(x1.imag())){
             x = x1;
         } else {
@@ -131,14 +131,22 @@ complex Polynomial::doFunctionOverDeriv(complex x){
 //    QElapsedTimer timer;
 //    timer.start();
 
-    complex ans = 1.0/(x - this->roots.back());
+    //turns out that for any polynomial f(x) with n complex roots r_0 ... r_n:
+    //f'(x)/f(x) = sum(i = 0 ... n, 1/(x-r_i))
+
+    complex ans = this->invertComplex(x - this->roots.back());
     for (int i = this->roots.size() - 2; i >= 0; --i){
-        ans += 1.0/(x - this->roots.at(i));
+        ans += this->invertComplex(x - this->roots.at(i));
     }
 
 //    printf("\tdoFunction/derivative took %llu ns\n", timer.nsecsElapsed());
 
-    return 1.0/ans;
+    return this->invertComplex(ans);
+}
+
+complex Polynomial::invertComplex(complex c){
+    double denominator = std::norm(c);
+    return complex(c.real()/denominator, -c.imag()/denominator);
 }
 
 std::vector<std::vector<complex>> Polynomial::getSets(std::vector<complex> list, uint set_size){

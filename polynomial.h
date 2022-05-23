@@ -27,6 +27,8 @@ public:
 
     complex doFunctionOverDeriv(complex x);
 
+    complex invertComplex(complex c);
+
     std::vector<std::vector<complex>> getSets(std::vector<complex> list, uint set_size);
 
     uint nCr(uint n, uint r);
