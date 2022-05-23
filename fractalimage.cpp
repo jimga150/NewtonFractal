@@ -8,11 +8,9 @@ FractalImage::FractalImage(QObject *parent)
     this->image.fill(Qt::GlobalColor::black);
 
     this->setScale(1);
+    this->setCenter(complex(0, 0));
 
-    int h_step = 360/10;
-    for (int i = 0; i < 10; ++i){ //TODO: make max roots a constant
-        this->colors.push_back(QColor::fromHsv(i*h_step, 150, 200));
-    }
+    this->generateColors();
 
     this->updateImage();
 }
@@ -60,8 +58,48 @@ void FractalImage::setScale(double scale){
 
     this->coord_to_ui_tform.translate(image.width()/2, this->image.height()/2);
     this->coord_to_ui_tform.scale(coord_to_ui_scale, coord_to_ui_scale);
+
+    QPointF center_pt = complexToQPointF(this->center);
+    this->coord_to_ui_tform.translate(center_pt.x(), center_pt.y());
+
     Q_ASSERT(this->coord_to_ui_tform.isInvertible());
     this->ui_to_coord_tform = this->coord_to_ui_tform.inverted();
+
+    this->generatePixelObjs();
+}
+
+void FractalImage::setCenter(complex center){
+    this->coord_to_ui_tform.reset();
+
+    this->coord_to_ui_tform.translate(image.width()/2, this->image.height()/2);
+    this->coord_to_ui_tform.scale(coord_to_ui_scale, coord_to_ui_scale);
+
+    if (!isfinite(center.real())){
+        center.real(this->center.real());
+    }
+    if (!isfinite(center.imag())){
+        center.imag(this->center.imag());
+    }
+    this->center = center;
+    QPointF center_pt = complexToQPointF(center);
+
+    this->coord_to_ui_tform.translate(center_pt.x(), center_pt.y());
+
+    Q_ASSERT(this->coord_to_ui_tform.isInvertible());
+    this->ui_to_coord_tform = this->coord_to_ui_tform.inverted();
+
+    this->generatePixelObjs();
+}
+
+void FractalImage::setCenterReal(double real){
+    this->setCenter(complex(real, NAN));
+}
+
+void FractalImage::setCenterImag(double imag){
+    this->setCenter(complex(NAN, imag));
+}
+
+void FractalImage::generatePixelObjs(){
 
     this->fractal_pixels.clear();
 
@@ -78,6 +116,14 @@ void FractalImage::setScale(double scale){
             this->fractal_pixels.push_back(FractalPixel(&image_line[x], coord, &this->poly_fxn, &this->colors));
 
         }
+    }
+}
+
+void FractalImage::generateColors(){
+    int h_step = 360.0/(this->poly_fxn.roots.size());
+    this->colors.clear();
+    for (uint i = 0; i < this->poly_fxn.roots.size(); ++i){
+        this->colors.push_back(QColor::fromHsv(i*h_step, 150, 200));
     }
 }
 

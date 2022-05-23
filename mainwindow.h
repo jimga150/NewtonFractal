@@ -70,6 +70,10 @@ private slots:
 
     void on_scale_spinbox_valueChanged(double arg1);
 
+    void on_center_real_spinbox_valueChanged(double arg1);
+
+    void on_center_imag_spinbox_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
 };

@@ -39,6 +39,7 @@ public:
 
     inline void setNumRoots(int nr){
         this->poly_fxn.changeNumRoots(nr);
+        this->generateColors();
     }
 
     inline void setNumIters(int ni){
@@ -46,6 +47,17 @@ public:
     }
 
     void setScale(double scale);
+
+    void setCenter(complex center);
+
+    void setCenterReal(double real);
+
+    void setCenterImag(double imag);
+
+    void generatePixelObjs();
+
+    void generateColors();
+
 
     QImage image;
 
@@ -64,6 +76,8 @@ public:
 private:
 
     Polynomial poly_fxn;
+
+    complex center;
 
 signals:
 

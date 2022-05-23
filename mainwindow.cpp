@@ -255,3 +255,14 @@ void MainWindow::on_scale_spinbox_valueChanged(double arg1){
     this->updateImage();
 }
 
+
+void MainWindow::on_center_real_spinbox_valueChanged(double arg1){
+    this->fractal.setCenterReal(arg1);
+    this->updateImage();
+}
+
+void MainWindow::on_center_imag_spinbox_valueChanged(double arg1){
+    this->fractal.setCenterImag(arg1);
+    this->updateImage();
+}
+
