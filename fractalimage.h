@@ -63,9 +63,9 @@ public:
 
     QImage image;
 
-    const double coord_to_ui_scale_correction_factor = 50.0;
+    const double coord_to_ui_scale_correction_factor = 150.0;
 
-    double coord_to_ui_scale = 50.0;
+    double coord_to_ui_scale = coord_to_ui_scale_correction_factor;
     double ui_to_coord_scale = 1.0/coord_to_ui_scale;
 
     QTransform coord_to_ui_tform;
