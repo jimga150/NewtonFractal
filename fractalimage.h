@@ -25,6 +25,8 @@ class FractalImage : public QObject
 public:
     explicit FractalImage(QObject *parent = nullptr);
 
+    void setImageSize(QSize size);
+
     void updateImage();
 
     void updateImageLine(int y);

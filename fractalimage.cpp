@@ -3,8 +3,11 @@
 FractalImage::FractalImage(QObject *parent)
     : QObject{parent}
 {
+    this->setImageSize(QSize(500, 500));
+}
 
-    this->image = QImage(500, 500, QImage::Format_ARGB32);
+void FractalImage::setImageSize(QSize size){
+    this->image = QImage(size, QImage::Format_ARGB32);
     this->image.fill(Qt::GlobalColor::black);
 
     this->setScale(1);

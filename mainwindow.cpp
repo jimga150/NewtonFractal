@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    this->fractal.setImageSize(this->ui->graphicsView->size());
+
     this->pixmap_item = this->scene.addPixmap(QPixmap::fromImage(this->fractal.image));
 
     ui->graphicsView->setScene(&this->scene);
