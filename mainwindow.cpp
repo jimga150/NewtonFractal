@@ -251,6 +251,7 @@ void MainWindow::numItersChanged(int ni, bool update_img){
 
 
 void MainWindow::on_scale_spinbox_valueChanged(double arg1){
+    this->ui->scale_spinbox->setSingleStep(0.1*arg1);
     this->fractal.setScale(arg1);
     this->updateImage();
 }
