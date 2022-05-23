@@ -45,10 +45,14 @@ public:
         this->poly_fxn.changeNumIters(ni);
     }
 
+    void setScale(double scale);
+
     QImage image;
 
-    const double coord_to_ui_scale = 50.0;
-    const double ui_to_coord_scale = 1.0/coord_to_ui_scale;
+    const double coord_to_ui_scale_correction_factor = 50.0;
+
+    double coord_to_ui_scale = 50.0;
+    double ui_to_coord_scale = 1.0/coord_to_ui_scale;
 
     QTransform coord_to_ui_tform;
     QTransform ui_to_coord_tform;

@@ -161,12 +161,12 @@ void MainWindow::numRootsChanged(int nr, bool update_img){
 
 void MainWindow::generateRootSpinBoxes(){
 
-    for (QMetaObject::Connection connection : this->root_real_edit_connections){
+    for (const QMetaObject::Connection &connection : this->root_real_edit_connections){
         disconnect(connection);
     }
     this->root_real_edit_connections.clear();
 
-    for (QMetaObject::Connection connection : this->root_imag_edit_connections){
+    for (const QMetaObject::Connection &connection : this->root_imag_edit_connections){
         disconnect(connection);
     }
     this->root_imag_edit_connections.clear();
@@ -247,5 +247,11 @@ void MainWindow::numItersChanged(int ni, bool update_img){
     this->printAvgUpdateTime();
     this->fractal.setNumIters(ni);
     if (update_img) this->updateImage();
+}
+
+
+void MainWindow::on_scale_spinbox_valueChanged(double arg1){
+    this->fractal.setScale(arg1);
+    this->updateImage();
 }
 

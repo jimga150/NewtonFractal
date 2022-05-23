@@ -68,6 +68,8 @@ private slots:
 
     void root_imag_spinbox_changed(int root_index, double new_val);
 
+    void on_scale_spinbox_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
 };

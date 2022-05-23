@@ -7,29 +7,11 @@ FractalImage::FractalImage(QObject *parent)
     this->image = QImage(500, 500, QImage::Format_ARGB32);
     this->image.fill(Qt::GlobalColor::black);
 
-    this->coord_to_ui_tform.translate(this->image.width()/2, this->image.height()/2);
-    this->coord_to_ui_tform.scale(coord_to_ui_scale, coord_to_ui_scale);
-    Q_ASSERT(this->coord_to_ui_tform.isInvertible());
-    this->ui_to_coord_tform = this->coord_to_ui_tform.inverted();
+    this->setScale(1);
 
     int h_step = 360/10;
     for (int i = 0; i < 10; ++i){ //TODO: make max roots a constant
         this->colors.push_back(QColor::fromHsv(i*h_step, 150, 200));
-    }
-
-    for (int y = 0; y < this->image.height(); ++y){
-
-        QRgb* image_line = reinterpret_cast<QRgb*>(this->image.scanLine(y));
-
-        for (int x = 0; x < this->image.width(); ++x){
-
-            QPointF pixel_pt(x, y);
-            QPointF coord_pt = this->ui_to_coord_tform.map(pixel_pt);
-            complex coord = qpointfToComplex(coord_pt);
-
-            this->fractal_pixels.push_back(FractalPixel(&image_line[x], coord, &this->poly_fxn, &this->colors));
-
-        }
     }
 
     this->updateImage();
@@ -68,6 +50,35 @@ void FractalImage::updateImage(){
 
 //    printf("fractal fill took %lld ns\n", timer.nsecsElapsed());
 //    timer.restart();
+}
+
+void FractalImage::setScale(double scale){
+    this->coord_to_ui_scale = scale*this->coord_to_ui_scale_correction_factor;
+    this->ui_to_coord_scale = 1.0/this->coord_to_ui_scale;
+
+    this->coord_to_ui_tform.reset();
+
+    this->coord_to_ui_tform.translate(image.width()/2, this->image.height()/2);
+    this->coord_to_ui_tform.scale(coord_to_ui_scale, coord_to_ui_scale);
+    Q_ASSERT(this->coord_to_ui_tform.isInvertible());
+    this->ui_to_coord_tform = this->coord_to_ui_tform.inverted();
+
+    this->fractal_pixels.clear();
+
+    for (int y = 0; y < this->image.height(); ++y){
+
+        QRgb* image_line = reinterpret_cast<QRgb*>(this->image.scanLine(y));
+
+        for (int x = 0; x < this->image.width(); ++x){
+
+            QPointF pixel_pt(x, y);
+            QPointF coord_pt = this->ui_to_coord_tform.map(pixel_pt);
+            complex coord = qpointfToComplex(coord_pt);
+
+            this->fractal_pixels.push_back(FractalPixel(&image_line[x], coord, &this->poly_fxn, &this->colors));
+
+        }
+    }
 }
 
 void FractalImage::updateImageLine(int y){
