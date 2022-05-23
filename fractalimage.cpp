@@ -79,4 +79,3 @@ void FractalImage::updateImageLine(int y){
         this->fractal_pixels.at(i).update();
     }
 }
-

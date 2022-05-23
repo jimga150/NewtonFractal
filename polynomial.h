@@ -25,6 +25,8 @@ public:
 
     complex doFunctionDerivative(complex x);
 
+    complex doFunctionOverDeriv(complex x);
+
     std::vector<std::vector<complex>> getSets(std::vector<complex> list, uint set_size);
 
     uint nCr(uint n, uint r);
@@ -42,7 +44,6 @@ public:
     std::vector<complex> fxn_coefs;
 
     int num_iterations = 3;
-
 };
 
 #endif // POLYNOMIAL_H

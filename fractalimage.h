@@ -29,6 +29,21 @@ public:
 
     void updateImageLine(int y);
 
+    inline std::vector<complex>* getRoots(){
+        return &this->poly_fxn.roots;
+    }
+
+    inline int getNumIters(){
+        return this->poly_fxn.num_iterations;
+    }
+
+    inline void setNumRoots(int nr){
+        this->poly_fxn.changeNumRoots(nr);
+    }
+
+    inline void setNumIters(int ni){
+        this->poly_fxn.changeNumIters(ni);
+    }
 
     QImage image;
 
@@ -41,6 +56,8 @@ public:
     std::vector<QColor> colors;
 
     std::vector<FractalPixel> fractal_pixels;
+
+private:
 
     Polynomial poly_fxn;
 

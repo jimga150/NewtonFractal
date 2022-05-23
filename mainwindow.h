@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QPainter>
-#include <QtConcurrent>
+#include <QLayoutItem>
 
 #include "customscene.h"
 #include "fractalimage.h"
@@ -23,9 +23,11 @@ public:
 
     void updateImage();
 
-    void numRootsChanged(int nr);
+    void numRootsChanged(int nr, bool update_img = true);
 
-    void numItersChanged(int ni);
+    void generateRootSpinBoxes();
+
+    void numItersChanged(int ni, bool update_img = true);
 
     void printAvgUpdateTime();
 
@@ -33,6 +35,10 @@ public:
     CustomScene scene;
 
     QGraphicsPixmapItem* pixmap_item;
+
+    QList<QWidget*> root_edit_items;
+    QList<QMetaObject::Connection> root_real_edit_connections;
+    QList<QMetaObject::Connection> root_imag_edit_connections;
 
     FractalImage fractal;
 
@@ -57,6 +63,10 @@ private slots:
     void on_num_iter_hslider_sliderReleased();
 
     void on_num_iter_spinbox_editingFinished();
+
+    void root_real_spinbox_changed(int root_index, double new_val);
+
+    void root_imag_spinbox_changed(int root_index, double new_val);
 
 private:
     Ui::MainWindow *ui;

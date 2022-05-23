@@ -29,6 +29,7 @@ uint Polynomial::findRoot(complex x){
 
     for (int i = 0; i < this->num_iterations; ++i){
         complex x1 = x - this->doFunction(x)/this->doFunctionDerivative(x);
+//        complex x1 = x - this->doFunctionOverDeriv(x);
         if (isfinite(x1.real()) && isfinite(x1.imag())){
             x = x1;
         } else {
@@ -123,6 +124,21 @@ complex Polynomial::doFunctionDerivative(complex x){
 //    printf("\tdoFunctionDerivative took %llu ns\n", timer.nsecsElapsed());
 
     return ans;
+}
+
+complex Polynomial::doFunctionOverDeriv(complex x){
+
+//    QElapsedTimer timer;
+//    timer.start();
+
+    complex ans = 1.0/(x - this->roots.back());
+    for (int i = this->roots.size() - 2; i >= 0; --i){
+        ans += 1.0/(x - this->roots.at(i));
+    }
+
+//    printf("\tdoFunction/derivative took %llu ns\n", timer.nsecsElapsed());
+
+    return 1.0/ans;
 }
 
 std::vector<std::vector<complex>> Polynomial::getSets(std::vector<complex> list, uint set_size){

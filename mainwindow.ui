@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1065</width>
+    <width>1102</width>
     <height>800</height>
    </rect>
   </property>
@@ -74,12 +74,18 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Number of algorithm iterations</string>
+      <item row="5" column="0" colspan="2">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
-       </widget>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item row="3" column="1">
        <widget class="QSpinBox" name="num_iter_spinbox">
@@ -96,6 +102,9 @@
          <number>3</number>
         </property>
        </widget>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <layout class="QGridLayout" name="rootEditGridLayout"/>
       </item>
       <item row="0" column="0" colspan="2">
        <widget class="QLabel" name="label_2">
@@ -126,18 +135,12 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0" colspan="2">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
+      <item row="2" column="0" colspan="2">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Number of algorithm iterations</string>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
+       </widget>
       </item>
      </layout>
     </item>
