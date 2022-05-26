@@ -222,11 +222,10 @@ void MainWindow::generateRootSpinBoxes(){
     }
 }
 
-void MainWindow::on_num_iter_hslider_sliderReleased()
+void MainWindow::on_num_iter_hslider_sliderMoved(int newval)
 {
-    int new_val = this->ui->num_iter_hslider->value();
-    this->ui->num_iter_spinbox->setValue(new_val);
-    this->numItersChanged(new_val);
+    this->ui->num_iter_spinbox->setValue(newval);
+    this->numItersChanged(newval);
 }
 
 
