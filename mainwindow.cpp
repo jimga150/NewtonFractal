@@ -58,7 +58,8 @@ void MainWindow::updateImage(){
 
     for (complex c : *this->fractal.getRoots()){
         QPointF center = complexToQPointF(c);
-        painter.drawEllipse(center, 0.1, 0.1);
+        //adjust to always be the same size on screen
+        painter.drawEllipse(center, 10*this->fractal.ui_to_coord_scale, 10*this->fractal.ui_to_coord_scale);
 //        printf("Drawing circle at (%f, %f)\n", center.x(), center.y());
     }
 
