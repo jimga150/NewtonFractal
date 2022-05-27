@@ -99,7 +99,7 @@ void MainWindow::clicked(QPoint p){
         double x_diff = root_pt.x() - coord.x();
         double y_diff = root_pt.y() - coord.y();
         double dist = sqrt(x_diff*x_diff + y_diff*y_diff);
-        if (dist < 0.1){
+        if (dist < 10*this->fractal.ui_to_coord_scale){
             this->current_root_selected = i;
             this->root_is_selected = true;
 //            printf("picked root %d\n", i);
