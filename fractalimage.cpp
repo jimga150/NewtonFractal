@@ -75,10 +75,10 @@ void FractalImage::setCenter(complex center){
     this->coord_to_ui_tform.translate(image.width()/2, this->image.height()/2);
     this->coord_to_ui_tform.scale(coord_to_ui_scale, coord_to_ui_scale);
 
-    if (!isfinite(center.real())){
+    if (!std::isfinite(center.real())){
         center.real(this->center.real());
     }
-    if (!isfinite(center.imag())){
+    if (!std::isfinite(center.imag())){
         center.imag(this->center.imag());
     }
     this->center = center;

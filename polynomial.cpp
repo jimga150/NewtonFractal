@@ -30,7 +30,7 @@ uint Polynomial::findRoot(complex x){
     for (int i = 0; i < this->num_iterations; ++i){
 //        complex x1 = x - this->doFunction(x)/this->doFunctionDerivative(x);
         complex x1 = x - this->doFunctionOverDeriv(x);
-        if (isfinite(x1.real()) && isfinite(x1.imag())){
+        if (std::isfinite(x1.real()) && std::isfinite(x1.imag())){
             x = x1;
         } else {
             break;
