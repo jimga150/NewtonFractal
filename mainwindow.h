@@ -36,6 +36,9 @@ public:
 
     QGraphicsPixmapItem* pixmap_item;
 
+    bool dragging_view = false;
+    QPointF pixel_dragging;
+
     QList<QWidget*> root_edit_items;
     QList<QMetaObject::Connection> root_real_edit_connections;
     QList<QMetaObject::Connection> root_imag_edit_connections;
@@ -49,9 +52,9 @@ public:
 
 
 public slots:
-    void clicked(QPoint p);
+    void clicked(QPointF p);
 
-    void dragged(QPoint p);
+    void dragged(QPointF p);
 
     void released();
 
@@ -70,9 +73,9 @@ private slots:
 
     void on_scale_spinbox_valueChanged(double arg1);
 
-    void on_center_real_spinbox_valueChanged(double arg1);
+    void center_real_spinbox_valueChanged(double arg1);
 
-    void on_center_imag_spinbox_valueChanged(double arg1);
+    void center_imag_spinbox_valueChanged(double arg1);
 
     void imageResized(QSize size);
 

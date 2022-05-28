@@ -9,6 +9,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    connect(this->ui->center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_real_spinbox_valueChanged);
+    connect(this->ui->center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_imag_spinbox_valueChanged);
+
     this->fractal.setImageSize(this->ui->graphicsView->size());
 
     this->pixmap_item = this->scene.addPixmap(QPixmap::fromImage(this->fractal.image));
@@ -84,8 +87,8 @@ void MainWindow::printAvgUpdateTime(){
     fflush(stdout);
 }
 
-void MainWindow::clicked(QPoint p){
-//    printf("click gotten at pixel (%d, %d)\n", p.x(), p.y());
+void MainWindow::clicked(QPointF p){
+//    printf("click gotten at pixel (%f, %f)\n", p.x(), p.y());
 //    fflush(stdout);
 
     QPointF pf = p;
@@ -107,11 +110,39 @@ void MainWindow::clicked(QPoint p){
         }
     }
 
+    if (!this->root_is_selected){
+        this->dragging_view = true;
+        this->pixel_dragging = p;
+    }
+
 }
 
-void MainWindow::dragged(QPoint p){
-//    printf("drag gotten at pixel (%d, %d)\n", p.x(), p.y());
+void MainWindow::dragged(QPointF p){
+//    printf("drag gotten at pixel (%f, %f)\n", p.x(), p.y());
 //    fflush(stdout);
+
+    if (this->dragging_view){
+        QPointF diff = this->pixel_dragging - p;
+        if (diff.isNull()) return;
+        QPointF diff_scaled = diff*this->fractal.ui_to_coord_scale;
+//        this->ui->graphicsView->setSceneRect(this->ui->graphicsView->sceneRect().translated(diff));
+        complex diff_cpx = qpointfToComplex(diff_scaled);
+        complex old_center = this->fractal.getCenter();
+        complex new_center = old_center - diff_cpx;
+        this->fractal.setCenter(new_center);
+
+        disconnect(this->ui->center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_real_spinbox_valueChanged);
+        this->ui->center_real_spinbox->setValue(new_center.real());
+        connect(this->ui->center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_real_spinbox_valueChanged);
+
+        disconnect(this->ui->center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_imag_spinbox_valueChanged);
+        this->ui->center_imag_spinbox->setValue(new_center.imag());
+        connect(this->ui->center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_imag_spinbox_valueChanged);
+
+        this->updateImage();
+        this->pixel_dragging = p;
+        return;
+    }
 
     if (!root_is_selected) return;
 
@@ -128,6 +159,7 @@ void MainWindow::dragged(QPoint p){
     QDoubleSpinBox* imag_spinbox = static_cast<QDoubleSpinBox*>(this->ui->rootEditGridLayout->itemAtPosition(this->current_root_selected, 3)->widget());
     disconnect(this->root_imag_edit_connections.at(this->current_root_selected));
     imag_spinbox->setValue(coord_cpx.imag());
+//    printf("setting imaginary spinbox %d to %f\n",this->current_root_selected, coord_cpx.imag());
     this->root_imag_edit_connections[this->current_root_selected] = connect(imag_spinbox, &QDoubleSpinBox::valueChanged, this,
             [=](double new_val){this->root_imag_spinbox_changed(this->current_root_selected, new_val);});
 
@@ -139,6 +171,8 @@ void MainWindow::dragged(QPoint p){
 void MainWindow::released(){
 //    printf("mouse released\n");
 //    fflush(stdout);
+    this->root_is_selected = false;
+    this->dragging_view = false;
 }
 
 void MainWindow::on_num_roots_hslider_sliderReleased()
@@ -182,11 +216,6 @@ void MainWindow::generateRootSpinBoxes(){
     }
     this->root_edit_items.clear();
 
-    QPointF max_ui_pt(this->fractal.image.width(), this->fractal.image.height());
-    complex max_coord = qpointfToComplex(this->fractal.ui_to_coord_tform.map(max_ui_pt));
-    QPointF min_ui_pt(0, 0);
-    complex min_coord = qpointfToComplex(this->fractal.ui_to_coord_tform.map(min_ui_pt));
-
     std::vector<complex>* roots = this->fractal.getRoots();
     for (uint i = 0; i < roots->size(); ++i){
         complex r = roots->at(i);
@@ -198,8 +227,8 @@ void MainWindow::generateRootSpinBoxes(){
         QDoubleSpinBox* real_spinbox = new QDoubleSpinBox();
         real_spinbox->setStepType(QAbstractSpinBox::StepType::AdaptiveDecimalStepType);
         real_spinbox->setDecimals(6);
-        real_spinbox->setMaximum(max_coord.real());
-        real_spinbox->setMinimum(min_coord.real());
+        real_spinbox->setMaximum(DBL_MAX);
+        real_spinbox->setMinimum(-DBL_MAX);
         real_spinbox->setValue(r.real());
         this->ui->rootEditGridLayout->addWidget(real_spinbox, i, 1);
         this->root_edit_items.push_back(real_spinbox);
@@ -213,8 +242,8 @@ void MainWindow::generateRootSpinBoxes(){
         QDoubleSpinBox* imag_spinbox = new QDoubleSpinBox();
         imag_spinbox->setStepType(QAbstractSpinBox::StepType::AdaptiveDecimalStepType);
         imag_spinbox->setDecimals(6);
-        imag_spinbox->setMaximum(max_coord.imag());
-        imag_spinbox->setMinimum(min_coord.imag());
+        imag_spinbox->setMaximum(DBL_MAX);
+        imag_spinbox->setMinimum(-DBL_MAX);
         imag_spinbox->setValue(r.imag());
         this->ui->rootEditGridLayout->addWidget(imag_spinbox, i, 3);
         this->root_edit_items.push_back(imag_spinbox);
@@ -261,12 +290,12 @@ void MainWindow::on_scale_spinbox_valueChanged(double arg1){
 }
 
 
-void MainWindow::on_center_real_spinbox_valueChanged(double arg1){
+void MainWindow::center_real_spinbox_valueChanged(double arg1){
     this->fractal.setCenterReal(arg1);
     this->updateImage();
 }
 
-void MainWindow::on_center_imag_spinbox_valueChanged(double arg1){
+void MainWindow::center_imag_spinbox_valueChanged(double arg1){
     this->fractal.setCenterImag(arg1);
     this->updateImage();
 }

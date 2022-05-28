@@ -15,9 +15,9 @@ public:
 
 signals:
 
-    void pixelClicked(QPoint p);
+    void pixelClicked(QPointF p);
 
-    void mouseDraggedTo(QPoint p);
+    void mouseDraggedTo(QPointF p);
 
     void mouseReleased();
 
@@ -31,7 +31,7 @@ protected:
 
         this->mouse_down = true;
 
-        emit this->pixelClicked(p.toPoint());
+        emit this->pixelClicked(p);
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event){
@@ -42,7 +42,7 @@ protected:
 
         //printf("Scene saw drag at %f, %f\n", p.x(), p.y());
 
-        emit this->mouseDraggedTo(p.toPoint());
+        emit this->mouseDraggedTo(p);
     }
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event){

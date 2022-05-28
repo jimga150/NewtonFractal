@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>1306</width>
     <height>900</height>
    </rect>
   </property>
@@ -27,7 +27,17 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="3">
+    <item row="0" column="0" colspan="2">
+     <widget class="CustomGraphicsView" name="graphicsView">
+      <property name="minimumSize">
+       <size>
+        <width>800</width>
+        <height>800</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="6" column="0">
        <widget class="QLabel" name="label_3">
@@ -137,6 +147,9 @@
         <property name="maximum">
          <double>100.000000000000000</double>
         </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
         <property name="stepType">
          <enum>QAbstractSpinBox::DefaultStepType</enum>
         </property>
@@ -226,16 +239,6 @@
       </item>
      </layout>
     </item>
-    <item row="0" column="0" colspan="3">
-     <widget class="CustomGraphicsView" name="graphicsView">
-      <property name="minimumSize">
-       <size>
-        <width>800</width>
-        <height>800</height>
-       </size>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
  </widget>
@@ -246,6 +249,16 @@
    <header>customgraphicsview.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>num_roots_hslider</tabstop>
+  <tabstop>num_roots_spinbox</tabstop>
+  <tabstop>num_iter_hslider</tabstop>
+  <tabstop>num_iter_spinbox</tabstop>
+  <tabstop>scale_spinbox</tabstop>
+  <tabstop>center_real_spinbox</tabstop>
+  <tabstop>center_imag_spinbox</tabstop>
+  <tabstop>graphicsView</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

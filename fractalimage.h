@@ -56,6 +56,10 @@ public:
 
     void setCenterImag(double imag);
 
+    inline complex getCenter(){
+        return this->center;
+    }
+
     void generatePixelObjs();
 
     void generateColors();
