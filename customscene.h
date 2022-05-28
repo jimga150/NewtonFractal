@@ -27,7 +27,8 @@ protected:
 
         const QPointF p = event->scenePos();
 
-        //printf("Scene saw press at %f, %f\n", p.x(), p.y());
+//        printf("Scene saw press at %f, %f\n", p.x(), p.y());
+//        fflush(stdout);
 
         this->mouse_down = true;
 

@@ -13,8 +13,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this->ui->center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_imag_spinbox_valueChanged);
 
     this->fractal.setImageSize(this->ui->graphicsView->size());
+    this->fractal.setNumRoots(5);
 
-    this->pixmap_item = this->scene.addPixmap(QPixmap::fromImage(this->fractal.image));
+    QPixmap fractal_pixmap = QPixmap::fromImage(this->fractal.image);
+//    fractal_pixmap.setDevicePixelRatio(2.0);
+    this->pixmap_item = this->scene.addPixmap(fractal_pixmap);
 
     ui->graphicsView->setScene(&this->scene);
     ui->graphicsView->show();
@@ -25,8 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(this->ui->graphicsView, &CustomGraphicsView::resized, this, &MainWindow::imageResized);
 
-    this->generateRootSpinBoxes();
     this->updateImage();
+    this->generateRootSpinBoxes();
 
 //    for(int nr = 3; nr <= 10; ++nr){
 //        this->numRootsChanged(nr, false);
@@ -68,7 +71,9 @@ void MainWindow::updateImage(){
 
     painter.end();
 
-    this->pixmap_item->setPixmap(QPixmap::fromImage(this->fractal.image));
+    QPixmap fractal_pixmap = QPixmap::fromImage(this->fractal.image);
+//    fractal_pixmap.setDevicePixelRatio(2.0);
+    this->pixmap_item->setPixmap(fractal_pixmap);
 
     unsigned long long nanos = timer.nsecsElapsed();
     this->update_times_ns.push_back(nanos);
@@ -149,14 +154,15 @@ void MainWindow::dragged(QPointF p){
     QPointF pf = p;
     QPointF coord_pt = this->fractal.ui_to_coord_tform.map(pf);
     complex coord_cpx = qpointfToComplex(coord_pt);
+    int root_row = this->getRootEditRow(this->current_root_selected);
 
-    QDoubleSpinBox* real_spinbox = static_cast<QDoubleSpinBox*>(this->ui->rootEditGridLayout->itemAtPosition(this->current_root_selected, 1)->widget());
+    QDoubleSpinBox* real_spinbox = static_cast<QDoubleSpinBox*>(this->ui->rootEditGridLayout->itemAtPosition(root_row, REAL_SPINBOX_COL)->widget());
     disconnect(this->root_real_edit_connections.at(this->current_root_selected));
     real_spinbox->setValue(coord_cpx.real());
     this->root_real_edit_connections[this->current_root_selected] = connect(real_spinbox, &QDoubleSpinBox::valueChanged, this,
             [=](double new_val){this->root_real_spinbox_changed(this->current_root_selected, new_val);});
 
-    QDoubleSpinBox* imag_spinbox = static_cast<QDoubleSpinBox*>(this->ui->rootEditGridLayout->itemAtPosition(this->current_root_selected, 3)->widget());
+    QDoubleSpinBox* imag_spinbox = static_cast<QDoubleSpinBox*>(this->ui->rootEditGridLayout->itemAtPosition(root_row, IMAG_SPINBOX_COL)->widget());
     disconnect(this->root_imag_edit_connections.at(this->current_root_selected));
     imag_spinbox->setValue(coord_cpx.imag());
 //    printf("setting imaginary spinbox %d to %f\n",this->current_root_selected, coord_cpx.imag());
@@ -194,8 +200,9 @@ void MainWindow::numRootsChanged(int nr, bool update_img){
 
     this->printAvgUpdateTime();
     this->fractal.setNumRoots(nr);
-    this->generateRootSpinBoxes();
     if (update_img) this->updateImage();
+    this->generateRootSpinBoxes();
+
 }
 
 void MainWindow::generateRootSpinBoxes(){
@@ -216,12 +223,36 @@ void MainWindow::generateRootSpinBoxes(){
     }
     this->root_edit_items.clear();
 
+    for (const QMetaObject::Connection &connection : this->root_red_edit_connections){
+        disconnect(connection);
+    }
+    this->root_red_edit_connections.clear();
+
+    for (const QMetaObject::Connection &connection : this->root_green_edit_connections){
+        disconnect(connection);
+    }
+    this->root_green_edit_connections.clear();
+
+    for (const QMetaObject::Connection &connection : this->root_blue_edit_connections){
+        disconnect(connection);
+    }
+    this->root_blue_edit_connections.clear();
+
+    for (QGridLayout* layout : this->root_color_edit_layouts){
+        this->ui->rootEditGridLayout->removeItem(layout);
+        layout->deleteLater();
+    }
+    this->root_color_edit_layouts.clear();
+
     std::vector<complex>* roots = this->fractal.getRoots();
     for (uint i = 0; i < roots->size(); ++i){
         complex r = roots->at(i);
 
+        int root_spinbox_row = this->getRootEditRow(i);
+        int root_color_row = this->getRootColorEditRow(i);
+
         QLabel* real_label = new QLabel("Real:");
-        this->ui->rootEditGridLayout->addWidget(real_label, i, 0);
+        this->ui->rootEditGridLayout->addWidget(real_label, root_spinbox_row, REAL_LABEL_COL);
         this->root_edit_items.push_back(real_label);
 
         QDoubleSpinBox* real_spinbox = new QDoubleSpinBox();
@@ -230,13 +261,13 @@ void MainWindow::generateRootSpinBoxes(){
         real_spinbox->setMaximum(DBL_MAX);
         real_spinbox->setMinimum(-DBL_MAX);
         real_spinbox->setValue(r.real());
-        this->ui->rootEditGridLayout->addWidget(real_spinbox, i, 1);
+        this->ui->rootEditGridLayout->addWidget(real_spinbox, root_spinbox_row, REAL_SPINBOX_COL);
         this->root_edit_items.push_back(real_spinbox);
         this->root_real_edit_connections.append(connect(real_spinbox, &QDoubleSpinBox::valueChanged, this,
                 [=](double new_val){this->root_real_spinbox_changed(i, new_val);}));
 
         QLabel* imag_label = new QLabel("Imag:");
-        this->ui->rootEditGridLayout->addWidget(imag_label, i, 2);
+        this->ui->rootEditGridLayout->addWidget(imag_label, root_spinbox_row, IMAG_LABEL_COL);
         this->root_edit_items.push_back(imag_label);
 
         QDoubleSpinBox* imag_spinbox = new QDoubleSpinBox();
@@ -245,10 +276,58 @@ void MainWindow::generateRootSpinBoxes(){
         imag_spinbox->setMaximum(DBL_MAX);
         imag_spinbox->setMinimum(-DBL_MAX);
         imag_spinbox->setValue(r.imag());
-        this->ui->rootEditGridLayout->addWidget(imag_spinbox, i, 3);
+        this->ui->rootEditGridLayout->addWidget(imag_spinbox, root_spinbox_row, IMAG_SPINBOX_COL);
         this->root_edit_items.push_back(imag_spinbox);
         this->root_imag_edit_connections.append(connect(imag_spinbox, &QDoubleSpinBox::valueChanged, this,
                 [=](double new_val){this->root_imag_spinbox_changed(i, new_val);}));
+
+        QGridLayout* color_grid_layout = new QGridLayout();
+        this->root_color_edit_layouts.append(color_grid_layout);
+
+        QLabel* color_indicator_label = new QLabel();
+        QColor col = this->fractal.colors.at(i);
+        color_indicator_label->setStyleSheet(QString("QLabel { background-color : rgb(%1, %2, %3)}").arg(col.red()).arg(col.green()).arg(col.blue()));
+//        printf("setting root %d label to %d, %d, %d\n", i, col.red(), col.green(), col.blue());
+        color_grid_layout->addWidget(color_indicator_label, 0, COLOR_COL);
+
+        QLabel* color_red_label = new QLabel("Red:");
+        color_grid_layout->addWidget(color_red_label, 0, RED_LABEL_COL);
+
+        QSpinBox* color_red_spinbox = new QSpinBox();
+        color_red_spinbox->setMinimum(0);
+        color_red_spinbox->setMaximum(255);
+        color_red_spinbox->setValue(col.red());
+        color_grid_layout->addWidget(color_red_spinbox, 0, RED_SPINBOX_COL);
+        this->root_red_edit_connections.append(connect(color_red_spinbox, &QSpinBox::valueChanged, this, [=](int new_val){
+            this->root_red_spinbox_changed(i, new_val);
+        }));
+
+        QLabel* color_green_label = new QLabel("Green:");
+        color_grid_layout->addWidget(color_green_label, 0, GREEN_LABEL_COL);
+
+        QSpinBox* color_green_spinbox = new QSpinBox();
+        color_green_spinbox->setMinimum(0);
+        color_green_spinbox->setMaximum(255);
+        color_green_spinbox->setValue(col.green());
+        color_grid_layout->addWidget(color_green_spinbox, 0, GREEN_SPINBOX_COL);
+        this->root_green_edit_connections.append(connect(color_green_spinbox, &QSpinBox::valueChanged, this, [=](int new_val){
+            this->root_green_spinbox_changed(i, new_val);
+        }));
+
+        QLabel* color_blue_label = new QLabel("Blue:");
+        color_grid_layout->addWidget(color_blue_label, 0, BLUE_LABEL_COL);
+
+        QSpinBox* color_blue_spinbox = new QSpinBox();
+        color_blue_spinbox->setMinimum(0);
+        color_blue_spinbox->setMaximum(255);
+        color_blue_spinbox->setValue(col.blue());
+        color_grid_layout->addWidget(color_blue_spinbox, 0, BLUE_SPINBOX_COL);
+        this->root_blue_edit_connections.append(connect(color_blue_spinbox, &QSpinBox::valueChanged, this, [=](int new_val){
+            this->root_blue_spinbox_changed(i, new_val);
+        }));
+
+        this->ui->rootEditGridLayout->addLayout(color_grid_layout, root_color_row, 0, 1, num_root_edit_cols);
+
     }
 }
 
@@ -273,6 +352,25 @@ void MainWindow::root_real_spinbox_changed(int root_index, double new_val){
 
 void MainWindow::root_imag_spinbox_changed(int root_index, double new_val){
     this->fractal.getRoots()->at(root_index).imag(new_val);
+    this->updateImage();
+}
+
+void MainWindow::root_red_spinbox_changed(int root_index, int new_val){
+    this->fractal.colors.at(root_index).setRed(new_val);
+    this->updateImage();
+    QColor col = this->fractal.colors.at(root_index);
+    QGridLayout* layout = this->root_color_edit_layouts.at(root_index);
+    QLabel* label = static_cast<QLabel*>(layout->itemAtPosition(0, COLOR_COL)->widget());
+    label->setStyleSheet(QString("QLabel { background-color : rgb(%1, %2, %3)}").arg(col.red()).arg(col.green()).arg(col.blue()));
+}
+
+void MainWindow::root_green_spinbox_changed(int root_index, int new_val){
+    this->fractal.colors.at(root_index).setGreen(new_val);
+    this->updateImage();
+}
+
+void MainWindow::root_blue_spinbox_changed(int root_index, int new_val){
+    this->fractal.colors.at(root_index).setBlue(new_val);
     this->updateImage();
 }
 

@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QPainter>
-#include <QLayoutItem>
+#include <QGridLayout>
 
 #include "customscene.h"
 #include "fractalimage.h"
@@ -12,6 +12,27 @@
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+enum root_edit_col_idx_enum{
+    REAL_LABEL_COL= 0,
+    REAL_SPINBOX_COL,
+    IMAG_LABEL_COL,
+    IMAG_SPINBOX_COL,
+
+    num_root_edit_cols
+};
+
+enum root_color_edit_col_idx_enum {
+    COLOR_COL = 0,
+    RED_LABEL_COL,
+    RED_SPINBOX_COL,
+    GREEN_LABEL_COL,
+    GREEN_SPINBOX_COL,
+    BLUE_LABEL_COL,
+    BLUE_SPINBOX_COL,
+
+    num_root_color_edit_cols
+};
 
 class MainWindow : public QMainWindow
 {
@@ -31,6 +52,14 @@ public:
 
     void printAvgUpdateTime();
 
+    inline int getRootEditRow(int root_index){
+        return 2*root_index;
+    }
+
+    inline int getRootColorEditRow(int root_index){
+        return 2*root_index + 1;
+    }
+
 
     CustomScene scene;
 
@@ -42,6 +71,11 @@ public:
     QList<QWidget*> root_edit_items;
     QList<QMetaObject::Connection> root_real_edit_connections;
     QList<QMetaObject::Connection> root_imag_edit_connections;
+
+    QList<QGridLayout*> root_color_edit_layouts;
+    QList<QMetaObject::Connection> root_red_edit_connections;
+    QList<QMetaObject::Connection> root_green_edit_connections;
+    QList<QMetaObject::Connection> root_blue_edit_connections;
 
     FractalImage fractal;
 
@@ -70,6 +104,12 @@ private slots:
     void root_real_spinbox_changed(int root_index, double new_val);
 
     void root_imag_spinbox_changed(int root_index, double new_val);
+
+    void root_red_spinbox_changed(int root_index, int new_val);
+
+    void root_green_spinbox_changed(int root_index, int new_val);
+
+    void root_blue_spinbox_changed(int root_index, int new_val);
 
     void on_scale_spinbox_valueChanged(double arg1);
 
