@@ -239,8 +239,14 @@ void MainWindow::generateRootSpinBoxes(){
     this->root_blue_edit_connections.clear();
 
     for (QGridLayout* layout : this->root_color_edit_layouts){
-        this->ui->rootEditGridLayout->removeItem(layout);
-        layout->deleteLater();
+        QLayoutItem *item;
+        while((item = layout->takeAt(0))) {
+            if (item->widget()) {
+                delete item->widget();
+            }
+            delete item;
+        }
+//        printf("Deleted color layout %p\n", layout);
     }
     this->root_color_edit_layouts.clear();
 
