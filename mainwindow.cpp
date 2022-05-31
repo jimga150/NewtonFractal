@@ -9,10 +9,14 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(this->ui->center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_real_spinbox_valueChanged);
-    connect(this->ui->center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_imag_spinbox_valueChanged);
+    connect(this->ui->coord_center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_real_spinbox_valueChanged);
+    connect(this->ui->coord_center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_imag_spinbox_valueChanged);
 
-    this->fractal.setImageSize(this->ui->graphicsView->size());
+    QSize gv_size = this->ui->graphicsView->size();
+    this->fractal.setImageSize(gv_size);
+    this->ui->image_height_spinbox->setValue(gv_size.height());
+    this->ui->image_width_spinbox->setValue(gv_size.width());
+
     this->fractal.setNumRoots(5);
 
     QPixmap fractal_pixmap = QPixmap::fromImage(this->fractal.image);
@@ -26,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&this->scene, &CustomScene::mouseDraggedTo, this, &MainWindow::dragged);
     connect(&this->scene, &CustomScene::mouseReleased, this, &MainWindow::released);
 
-    connect(this->ui->graphicsView, &CustomGraphicsView::resized, this, &MainWindow::imageResized);
+//    connect(this->ui->graphicsView, &CustomGraphicsView::resized, this, &MainWindow::imageResized);
 
     this->updateImage();
     this->generateRootSpinBoxes();
@@ -136,13 +140,13 @@ void MainWindow::dragged(QPointF p){
         complex new_center = old_center - diff_cpx;
         this->fractal.setCenter(new_center);
 
-        disconnect(this->ui->center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_real_spinbox_valueChanged);
-        this->ui->center_real_spinbox->setValue(new_center.real());
-        connect(this->ui->center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_real_spinbox_valueChanged);
+        disconnect(this->ui->coord_center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_real_spinbox_valueChanged);
+        this->ui->coord_center_real_spinbox->setValue(new_center.real());
+        connect(this->ui->coord_center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_real_spinbox_valueChanged);
 
-        disconnect(this->ui->center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_imag_spinbox_valueChanged);
-        this->ui->center_imag_spinbox->setValue(new_center.imag());
-        connect(this->ui->center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::center_imag_spinbox_valueChanged);
+        disconnect(this->ui->coord_center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_imag_spinbox_valueChanged);
+        this->ui->coord_center_imag_spinbox->setValue(new_center.imag());
+        connect(this->ui->coord_center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_imag_spinbox_valueChanged);
 
         this->updateImage();
         this->pixel_dragging = p;
@@ -288,6 +292,7 @@ void MainWindow::generateRootSpinBoxes(){
                 [=](double new_val){this->root_imag_spinbox_changed(i, new_val);}));
 
         QGridLayout* color_grid_layout = new QGridLayout();
+//        printf("Made color layout %p\n", color_grid_layout);
         this->root_color_edit_layouts.append(color_grid_layout);
 
         QLabel* color_indicator_label = new QLabel();
@@ -387,24 +392,83 @@ void MainWindow::numItersChanged(int ni, bool update_img){
 }
 
 
-void MainWindow::on_scale_spinbox_valueChanged(double arg1){
-    this->ui->scale_spinbox->setSingleStep(0.1*arg1);
+void MainWindow::on_coord_scale_spinbox_valueChanged(double arg1){
+    this->ui->coord_scale_spinbox->setSingleStep(0.1*arg1);
     this->fractal.setScale(arg1);
     this->updateImage();
 }
 
 
-void MainWindow::center_real_spinbox_valueChanged(double arg1){
+void MainWindow::coord_center_real_spinbox_valueChanged(double arg1){
     this->fractal.setCenterReal(arg1);
     this->updateImage();
 }
 
-void MainWindow::center_imag_spinbox_valueChanged(double arg1){
+void MainWindow::coord_center_imag_spinbox_valueChanged(double arg1){
     this->fractal.setCenterImag(arg1);
     this->updateImage();
 }
 
 void MainWindow::imageResized(QSize size){
+    QSizeF sizef(size);
+    sizef.rwidth() /= this->image_scale;
+    sizef.rheight() /= this->image_scale;
+    size = sizef.toSize();
+
     this->fractal.setImageSize(size);
+
+    this->ui->image_width_spinbox->setValue(size.width());
+    this->ui->image_height_spinbox->setValue(size.height());
+
     this->updateImage();
 }
+
+void MainWindow::on_pushButton_clicked(){
+    QRectF rect = this->fractal.getRootBoundingBox();
+    this->ui->coord_scale_spinbox->setValue(this->fractal.getScaleOf(rect, this->fractal.image.size()));
+    complex center_cpx = this->fractal.getCenterOF(rect);
+    this->ui->coord_center_real_spinbox->setValue(center_cpx.real());
+    this->ui->coord_center_imag_spinbox->setValue(center_cpx.imag());
+}
+
+void MainWindow::on_image_scale_spinbox_valueChanged(double arg1){
+    QTransform transform;
+    transform.scale(arg1, arg1);
+
+    this->ui->graphicsView->setTransform(transform);
+
+    this->image_scale = arg1;
+//    this->imageResized(this->ui->graphicsView->size());
+
+    this->ui->image_scale_spinbox->setSingleStep(0.1*arg1);
+}
+
+
+void MainWindow::on_image_width_spinbox_editingFinished(){
+    this->imageResized(QSize(this->ui->image_width_spinbox->value(), this->ui->image_height_spinbox->value()));
+}
+
+
+void MainWindow::on_image_height_spinbox_editingFinished(){
+    this->imageResized(QSize(this->ui->image_width_spinbox->value(), this->ui->image_height_spinbox->value()));
+}
+
+
+void MainWindow::on_save_button_clicked(){
+    QString filter_str = "Images (";
+    for (const QByteArray &ba : QImageWriter::supportedImageFormats()){
+        filter_str += QString("*.%1 ").arg(ba.constData());
+    }
+    filter_str.remove(filter_str.length()-1, 1);
+    filter_str += ")";
+
+    QString filepath_str =  QFileDialog::getSaveFileName(this, tr("Save File as"),
+                                                      QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
+                                                      filter_str);
+    printf("Save location: %s\n", filepath_str.toUtf8().constData());
+    if (!this->fractal.image.save(filepath_str)){
+        fprintf(stderr, "Could not save image\n");
+    }
+
+}
+

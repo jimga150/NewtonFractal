@@ -128,6 +128,41 @@ void FractalImage::generateColors(){
     }
 }
 
+QRectF FractalImage::getRootBoundingBox(){
+    QRectF ans(complexToQPointF(this->poly_fxn.roots.at(0)), QSizeF(DBL_EPSILON, DBL_EPSILON));
+    for (uint i = 1; i < this->poly_fxn.roots.size(); ++i){
+        QRectF this_root_rect(complexToQPointF(this->poly_fxn.roots.at(i)), QSizeF(DBL_EPSILON, DBL_EPSILON));
+        ans = ans.united(this_root_rect);
+    }
+//    printf("Rect is (%f, %f), %f x %f\n", ans.x(), ans.y(), ans.width(), ans.height());
+//    fflush(stdout);
+    return ans;
+}
+
+double FractalImage::getScaleOf(QRectF rect, QSizeF image_size){
+    double rect_ar = rect.height()/rect.width();
+    double image_ar = image_size.height()/image_size.width();
+
+    double rect_dist;
+    double image_dist;
+
+    if (rect_ar > image_ar){
+        rect_dist = rect.width();
+        image_dist = image_size.width();
+    } else {
+        rect_dist = rect.height();
+        image_dist = image_size.height();
+    }
+
+    double actual_scale = image_dist/rect_dist;
+
+    return actual_scale/this->coord_to_ui_scale_correction_factor;
+}
+
+complex FractalImage::getCenterOF(QRectF rect){
+    return complex(-(rect.left() + rect.right())/2, (rect.top() + rect.bottom())/2);
+}
+
 void FractalImage::updateImageLine(int y){
 
     int first = y*this->image.width();

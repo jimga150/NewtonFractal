@@ -64,6 +64,12 @@ public:
 
     void generateColors();
 
+    QRectF getRootBoundingBox();
+
+    double getScaleOf(QRectF rect, QSizeF image_size);
+
+    complex getCenterOF(QRectF rect);
+
 
     QImage image;
 

@@ -39,42 +39,10 @@
     </item>
     <item row="0" column="2">
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="1" column="0" colspan="2">
-       <widget class="QSlider" name="num_roots_hslider">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>10</number>
-        </property>
-        <property name="pageStep">
-         <number>2</number>
-        </property>
-        <property name="value">
-         <number>5</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="tickPosition">
-         <enum>QSlider::TicksBothSides</enum>
-        </property>
-        <property name="tickInterval">
-         <number>1</number>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="3">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Number of algorithm iterations</string>
-        </property>
-       </widget>
-      </item>
       <item row="7" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Center</string>
+         <string>Coordinate Center</string>
         </property>
        </widget>
       </item>
@@ -94,89 +62,32 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Scale</string>
-        </property>
-       </widget>
-      </item>
       <item row="4" column="0" colspan="3">
        <layout class="QGridLayout" name="rootEditGridLayout"/>
       </item>
-      <item row="8" column="0" colspan="3">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="0" colspan="3">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Number of roots</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1" colspan="2">
-       <widget class="QDoubleSpinBox" name="scale_spinbox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="decimals">
-         <number>6</number>
-        </property>
-        <property name="minimum">
-         <double>0.000001000000000</double>
-        </property>
-        <property name="maximum">
-         <double>100000000.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.100000000000000</double>
-        </property>
-        <property name="stepType">
-         <enum>QAbstractSpinBox::DefaultStepType</enum>
-        </property>
-        <property name="value">
-         <double>1.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="1">
-       <widget class="QDoubleSpinBox" name="center_real_spinbox">
-        <property name="prefix">
-         <string>(</string>
-        </property>
+      <item row="8" column="2">
+       <widget class="QSpinBox" name="image_height_spinbox">
         <property name="suffix">
-         <string>,</string>
+         <string> px</string>
         </property>
-        <property name="decimals">
-         <number>3</number>
+        <property name="prefix">
+         <string>Height: </string>
         </property>
         <property name="minimum">
-         <double>-100.000000000000000</double>
+         <number>1</number>
         </property>
         <property name="maximum">
-         <double>100.000000000000000</double>
+         <number>10000</number>
         </property>
         <property name="stepType">
          <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Image Scale</string>
         </property>
        </widget>
       </item>
@@ -218,8 +129,175 @@
         </property>
        </widget>
       </item>
+      <item row="10" column="0" colspan="3">
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Set Bounding Box View</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QSlider" name="num_roots_hslider">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>10</number>
+        </property>
+        <property name="pageStep">
+         <number>2</number>
+        </property>
+        <property name="value">
+         <number>5</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="tickPosition">
+         <enum>QSlider::TicksBothSides</enum>
+        </property>
+        <property name="tickInterval">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Image Resolution</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="3">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Number of algorithm iterations</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="1" colspan="2">
+       <widget class="QDoubleSpinBox" name="image_scale_spinbox">
+        <property name="minimum">
+         <double>0.010000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>100.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+        <property name="stepType">
+         <enum>QAbstractSpinBox::DefaultStepType</enum>
+        </property>
+        <property name="value">
+         <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Coordinate Scale</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1" colspan="2">
+       <widget class="QDoubleSpinBox" name="coord_scale_spinbox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="minimum">
+         <double>0.000001000000000</double>
+        </property>
+        <property name="maximum">
+         <double>100000000.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+        <property name="stepType">
+         <enum>QAbstractSpinBox::DefaultStepType</enum>
+        </property>
+        <property name="value">
+         <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="0" colspan="3">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="0" colspan="3">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Number of roots</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QDoubleSpinBox" name="coord_center_real_spinbox">
+        <property name="prefix">
+         <string>(</string>
+        </property>
+        <property name="suffix">
+         <string>,</string>
+        </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
+        <property name="minimum">
+         <double>-100.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>100.000000000000000</double>
+        </property>
+        <property name="stepType">
+         <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QSpinBox" name="image_width_spinbox">
+        <property name="suffix">
+         <string> px</string>
+        </property>
+        <property name="prefix">
+         <string>Width: </string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>10000</number>
+        </property>
+        <property name="stepType">
+         <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+        </property>
+       </widget>
+      </item>
       <item row="7" column="2">
-       <widget class="QDoubleSpinBox" name="center_imag_spinbox">
+       <widget class="QDoubleSpinBox" name="coord_center_imag_spinbox">
         <property name="suffix">
          <string>)</string>
         </property>
@@ -234,6 +312,13 @@
         </property>
         <property name="stepType">
          <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="0" colspan="3">
+       <widget class="QPushButton" name="save_button">
+        <property name="text">
+         <string>Save Image as...</string>
         </property>
        </widget>
       </item>
@@ -254,9 +339,9 @@
   <tabstop>num_roots_spinbox</tabstop>
   <tabstop>num_iter_hslider</tabstop>
   <tabstop>num_iter_spinbox</tabstop>
-  <tabstop>scale_spinbox</tabstop>
-  <tabstop>center_real_spinbox</tabstop>
-  <tabstop>center_imag_spinbox</tabstop>
+  <tabstop>coord_scale_spinbox</tabstop>
+  <tabstop>coord_center_real_spinbox</tabstop>
+  <tabstop>coord_center_imag_spinbox</tabstop>
   <tabstop>graphicsView</tabstop>
  </tabstops>
  <resources/>

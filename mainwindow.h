@@ -5,6 +5,8 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QGridLayout>
+#include <QFileDialog>
+#include <QImageWriter>
 
 #include "customscene.h"
 #include "fractalimage.h"
@@ -63,6 +65,8 @@ public:
 
     CustomScene scene;
 
+    double image_scale = 1;
+
     QGraphicsPixmapItem* pixmap_item;
 
     bool dragging_view = false;
@@ -111,13 +115,23 @@ private slots:
 
     void root_blue_spinbox_changed(int root_index, int new_val);
 
-    void on_scale_spinbox_valueChanged(double arg1);
+    void on_coord_scale_spinbox_valueChanged(double arg1);
 
-    void center_real_spinbox_valueChanged(double arg1);
+    void coord_center_real_spinbox_valueChanged(double arg1);
 
-    void center_imag_spinbox_valueChanged(double arg1);
+    void coord_center_imag_spinbox_valueChanged(double arg1);
 
     void imageResized(QSize size);
+
+    void on_pushButton_clicked();
+
+    void on_image_scale_spinbox_valueChanged(double arg1);
+
+    void on_image_width_spinbox_editingFinished();
+
+    void on_image_height_spinbox_editingFinished();
+
+    void on_save_button_clicked();
 
 private:
     Ui::MainWindow *ui;
