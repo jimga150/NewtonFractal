@@ -83,6 +83,7 @@ public:
 
     FractalImage fractal;
 
+    bool render_roots = true;
     bool root_is_selected = false;
     uint current_root_selected = 0;
 
@@ -132,6 +133,8 @@ private slots:
     void on_image_height_spinbox_editingFinished();
 
     void on_save_button_clicked();
+
+    void on_render_roots_checkbox_stateChanged(int arg1);
 
 private:
     Ui::MainWindow *ui;

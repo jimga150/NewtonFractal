@@ -58,22 +58,24 @@ void MainWindow::updateImage(){
 
     this->fractal.updateImage();
 
-    QPainter painter(&this->fractal.image);
+    if (this->render_roots){
+        QPainter painter(&this->fractal.image);
 
-    QPen pen(QBrush(Qt::GlobalColor::white), this->fractal.ui_to_coord_scale);
-    pen.setColor(Qt::GlobalColor::white);
-    painter.setPen(pen);
+        QPen pen(QBrush(Qt::GlobalColor::white), this->fractal.ui_to_coord_scale);
+        pen.setColor(Qt::GlobalColor::white);
+        painter.setPen(pen);
 
-    painter.setTransform(this->fractal.coord_to_ui_tform);
+        painter.setTransform(this->fractal.coord_to_ui_tform);
 
-    for (complex c : *this->fractal.getRoots()){
-        QPointF center = complexToQPointF(c);
-        //adjust to always be the same size on screen
-        painter.drawEllipse(center, 10*this->fractal.ui_to_coord_scale, 10*this->fractal.ui_to_coord_scale);
-//        printf("Drawing circle at (%f, %f)\n", center.x(), center.y());
+        for (complex c : *this->fractal.getRoots()){
+            QPointF center = complexToQPointF(c);
+            //adjust to always be the same size on screen
+            painter.drawEllipse(center, 10*this->fractal.ui_to_coord_scale, 10*this->fractal.ui_to_coord_scale);
+    //        printf("Drawing circle at (%f, %f)\n", center.x(), center.y());
+        }
+
+        painter.end();
     }
-
-    painter.end();
 
     QPixmap fractal_pixmap = QPixmap::fromImage(this->fractal.image);
 //    fractal_pixmap.setDevicePixelRatio(2.0);
@@ -105,17 +107,19 @@ void MainWindow::clicked(QPointF p){
 
     this->root_is_selected = false;
 
-    for (uint i = 0; i < this->fractal.getRoots()->size(); ++i){
-        complex r = this->fractal.getRoots()->at(i);
-        QPointF root_pt = complexToQPointF(r);
-        double x_diff = root_pt.x() - coord.x();
-        double y_diff = root_pt.y() - coord.y();
-        double dist = sqrt(x_diff*x_diff + y_diff*y_diff);
-        if (dist < 10*this->fractal.ui_to_coord_scale){
-            this->current_root_selected = i;
-            this->root_is_selected = true;
-//            printf("picked root %d\n", i);
-            break;
+    if (this->render_roots){
+        for (uint i = 0; i < this->fractal.getRoots()->size(); ++i){
+            complex r = this->fractal.getRoots()->at(i);
+            QPointF root_pt = complexToQPointF(r);
+            double x_diff = root_pt.x() - coord.x();
+            double y_diff = root_pt.y() - coord.y();
+            double dist = sqrt(x_diff*x_diff + y_diff*y_diff);
+            if (dist < 10*this->fractal.ui_to_coord_scale){
+                this->current_root_selected = i;
+                this->root_is_selected = true;
+    //            printf("picked root %d\n", i);
+                break;
+            }
         }
     }
 
@@ -470,5 +474,15 @@ void MainWindow::on_save_button_clicked(){
         fprintf(stderr, "Could not save image\n");
     }
 
+}
+
+
+void MainWindow::on_render_roots_checkbox_stateChanged(int arg1){
+    if (arg1){
+        this->render_roots = true;
+    } else {
+        this->render_roots = false;
+    }
+    this->updateImage();
 }
 
