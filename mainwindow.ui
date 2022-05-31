@@ -130,7 +130,7 @@
        </widget>
       </item>
       <item row="10" column="0" colspan="3">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="set_bounding_view_button">
         <property name="text">
          <string>Set Bounding Box View</string>
         </property>

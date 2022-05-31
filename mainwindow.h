@@ -123,7 +123,7 @@ private slots:
 
     void imageResized(QSize size);
 
-    void on_pushButton_clicked();
+    void on_set_bounding_view_button_clicked();
 
     void on_image_scale_spinbox_valueChanged(double arg1);
 

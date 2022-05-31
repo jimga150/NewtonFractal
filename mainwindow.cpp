@@ -423,7 +423,7 @@ void MainWindow::imageResized(QSize size){
     this->updateImage();
 }
 
-void MainWindow::on_pushButton_clicked(){
+void MainWindow::on_set_bounding_view_button_clicked(){
     QRectF rect = this->fractal.getRootBoundingBox();
     this->ui->coord_scale_spinbox->setValue(this->fractal.getScaleOf(rect, this->fractal.image.size()));
     complex center_cpx = this->fractal.getCenterOF(rect);
