@@ -7,6 +7,7 @@
 #include <QGridLayout>
 #include <QFileDialog>
 #include <QImageWriter>
+#include <QApplication>
 
 #include "customscene.h"
 #include "fractalimage.h"

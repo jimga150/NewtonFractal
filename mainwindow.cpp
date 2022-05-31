@@ -56,6 +56,9 @@ void MainWindow::updateImage(){
     QElapsedTimer timer;
     timer.start();
 
+    this->ui->rendering_label->setText("Rendering...");
+    QApplication::processEvents();
+
     this->fractal.updateImage();
 
     if (this->render_roots){
@@ -80,6 +83,9 @@ void MainWindow::updateImage(){
     QPixmap fractal_pixmap = QPixmap::fromImage(this->fractal.image);
 //    fractal_pixmap.setDevicePixelRatio(2.0);
     this->pixmap_item->setPixmap(fractal_pixmap);
+
+    this->ui->rendering_label->setText("");
+    QApplication::processEvents();
 
     unsigned long long nanos = timer.nsecsElapsed();
     this->update_times_ns.push_back(nanos);
