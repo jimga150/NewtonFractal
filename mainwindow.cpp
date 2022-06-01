@@ -420,6 +420,9 @@ void MainWindow::coord_center_imag_spinbox_valueChanged(double arg1){
 }
 
 void MainWindow::imageResized(QSize size){
+
+    this->printAvgUpdateTime();
+
     QSizeF sizef(size);
     sizef.rwidth() /= this->image_scale;
     sizef.rheight() /= this->image_scale;
