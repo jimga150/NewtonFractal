@@ -548,11 +548,6 @@ void MainWindow::imageResized(QSize size){
 
     this->printAvgUpdateTime();
 
-    QSizeF sizef(size);
-    sizef.rwidth() /= this->image_scale;
-    sizef.rheight() /= this->image_scale;
-    size = sizef.toSize();
-
     this->fractal.setImageSize(size);
 
     this->ui->image_width_spinbox->setValue(size.width());
