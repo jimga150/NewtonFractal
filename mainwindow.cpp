@@ -150,13 +150,17 @@ void MainWindow::dragged(QPointF p){
         complex new_center = old_center - diff_cpx;
         this->fractal.setCenter(new_center);
 
-        disconnect(this->ui->coord_center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_real_spinbox_valueChanged);
+//        disconnect(this->ui->coord_center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_real_spinbox_valueChanged);
+        this->ui->coord_center_real_spinbox->blockSignals(true);
         this->ui->coord_center_real_spinbox->setValue(new_center.real());
-        connect(this->ui->coord_center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_real_spinbox_valueChanged);
+        this->ui->coord_center_real_spinbox->blockSignals(false);
+//        connect(this->ui->coord_center_real_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_real_spinbox_valueChanged);
 
-        disconnect(this->ui->coord_center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_imag_spinbox_valueChanged);
+//        disconnect(this->ui->coord_center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_imag_spinbox_valueChanged);
+        this->ui->coord_center_imag_spinbox->blockSignals(true);
         this->ui->coord_center_imag_spinbox->setValue(new_center.imag());
-        connect(this->ui->coord_center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_imag_spinbox_valueChanged);
+        this->ui->coord_center_imag_spinbox->blockSignals(false);
+//        connect(this->ui->coord_center_imag_spinbox, &QDoubleSpinBox::valueChanged, this, &MainWindow::coord_center_imag_spinbox_valueChanged);
 
         this->updateImage();
         this->pixel_dragging = p;
