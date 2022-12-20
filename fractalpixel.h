@@ -4,7 +4,6 @@
 #include <QRgb>
 #include <QColor>
 
-#include "common.h"
 #include "polynomial.h"
 
 class FractalPixel
