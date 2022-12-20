@@ -192,41 +192,49 @@ void MainWindow::updateRealSpinBox(int root_index, double new_val){
     int root_cart_row = this->getRootCartEditRow(root_index);
 
     QDoubleSpinBox* real_spinbox = static_cast<QDoubleSpinBox*>(this->ui->rootEditGridLayout->itemAtPosition(root_cart_row, REAL_SPINBOX_COL)->widget());
-    disconnect(this->root_real_edit_connections.at(root_index));
+//    disconnect(this->root_real_edit_connections.at(root_index));
+    real_spinbox->blockSignals(true);
     real_spinbox->setValue(new_val);
-    this->root_real_edit_connections[root_index] = connect(real_spinbox, &QDoubleSpinBox::valueChanged, this,
-            [=](double new_val){this->root_real_spinbox_changed(root_index, new_val);});
+    real_spinbox->blockSignals(false);
+//    this->root_real_edit_connections[root_index] = connect(real_spinbox, &QDoubleSpinBox::valueChanged, this,
+//            [=](double new_val){this->root_real_spinbox_changed(root_index, new_val);});
 }
 
 void MainWindow::updateImagSpinBox(int root_index, double new_val){
     int root_cart_row = this->getRootCartEditRow(root_index);
 
     QDoubleSpinBox* imag_spinbox = static_cast<QDoubleSpinBox*>(this->ui->rootEditGridLayout->itemAtPosition(root_cart_row, IMAG_SPINBOX_COL)->widget());
-    disconnect(this->root_imag_edit_connections.at(root_index));
+//    disconnect(this->root_imag_edit_connections.at(root_index));
+    imag_spinbox->blockSignals(true);
     imag_spinbox->setValue(new_val);
+    imag_spinbox->blockSignals(false);
 //    printf("setting imaginary spinbox %d to %f\n", root_index, coord_cpx.imag());
-    this->root_imag_edit_connections[root_index] = connect(imag_spinbox, &QDoubleSpinBox::valueChanged, this,
-            [=](double new_val){this->root_imag_spinbox_changed(root_index, new_val);});
+//    this->root_imag_edit_connections[root_index] = connect(imag_spinbox, &QDoubleSpinBox::valueChanged, this,
+//            [=](double new_val){this->root_imag_spinbox_changed(root_index, new_val);});
 }
 
 void MainWindow::updateRSpinBox(int root_index, double new_val){
     int root_polar_row = this->getRootPolarEditRow(root_index);
 
     QDoubleSpinBox* r_spinbox = static_cast<QDoubleSpinBox*>(this->ui->rootEditGridLayout->itemAtPosition(root_polar_row, R_SPINBOX_COL)->widget());
-    disconnect(this->root_r_edit_connections.at(root_index));
+//    disconnect(this->root_r_edit_connections.at(root_index));
+    r_spinbox->blockSignals(true);
     r_spinbox->setValue(new_val);
-    this->root_r_edit_connections[root_index] = connect(r_spinbox, &QDoubleSpinBox::valueChanged, this,
-            [=](double new_val){this->root_r_spinbox_changed(root_index, new_val);});
+    r_spinbox->blockSignals(false);
+//    this->root_r_edit_connections[root_index] = connect(r_spinbox, &QDoubleSpinBox::valueChanged, this,
+//            [=](double new_val){this->root_r_spinbox_changed(root_index, new_val);});
 }
 
 void MainWindow::updateThetaSpinBox(int root_index, double new_val){
     int root_polar_row = this->getRootPolarEditRow(root_index);
 
     QDoubleSpinBox* theta_spinbox = static_cast<QDoubleSpinBox*>(this->ui->rootEditGridLayout->itemAtPosition(root_polar_row, THETA_SPINBOX_COL)->widget());
-    disconnect(this->root_theta_edit_connections.at(root_index));
+//    disconnect(this->root_theta_edit_connections.at(root_index));
+    theta_spinbox->blockSignals(true);
     theta_spinbox->setValue(new_val);
-    this->root_theta_edit_connections[root_index] = connect(theta_spinbox, &QDoubleSpinBox::valueChanged, this,
-            [=](double new_val){this->root_theta_spinbox_changed(root_index, new_val);});
+    theta_spinbox->blockSignals(false);
+//    this->root_theta_edit_connections[root_index] = connect(theta_spinbox, &QDoubleSpinBox::valueChanged, this,
+//            [=](double new_val){this->root_theta_spinbox_changed(root_index, new_val);});
 }
 
 void MainWindow::released(){
@@ -246,7 +254,10 @@ void MainWindow::on_num_roots_hslider_sliderReleased()
 
 void MainWindow::on_num_roots_spinbox_editingFinished()
 {
-    int new_val = this->ui->num_roots_spinbox->value();
+    uint new_val = this->ui->num_roots_spinbox->value();
+    if (new_val == this->fractal.getRoots()->size()){
+        return;
+    }
     this->ui->num_roots_hslider->setValue(new_val);
     this->numRootsChanged(new_val);
 }
@@ -429,10 +440,10 @@ void MainWindow::generateRootSpinBoxes(){
     }
 }
 
-void MainWindow::on_num_iter_hslider_sliderMoved(int newval)
+void MainWindow::on_num_iter_hslider_sliderMoved(int new_val)
 {
-    this->ui->num_iter_spinbox->setValue(newval);
-    this->numItersChanged(newval);
+    this->ui->num_iter_spinbox->setValue(new_val);
+    this->numItersChanged(new_val);
 }
 
 
@@ -440,6 +451,9 @@ void MainWindow::on_num_iter_spinbox_editingFinished()
 {
     int new_val = this->ui->num_iter_spinbox->value();
     this->ui->num_iter_hslider->setValue(new_val);
+    if (new_val == this->fractal.getNumIters()){
+        return;
+    }
     this->numItersChanged(new_val);
 }
 
@@ -569,12 +583,18 @@ void MainWindow::on_image_scale_spinbox_valueChanged(double arg1){
 
 
 void MainWindow::on_image_width_spinbox_editingFinished(){
-    this->imageResized(QSize(this->ui->image_width_spinbox->value(), this->ui->image_height_spinbox->value()));
+    int new_width = this->ui->image_width_spinbox->value();
+    if (this->fractal.image.size().width() != new_width){
+        this->imageResized(QSize(new_width, this->ui->image_height_spinbox->value()));
+    }
 }
 
 
 void MainWindow::on_image_height_spinbox_editingFinished(){
-    this->imageResized(QSize(this->ui->image_width_spinbox->value(), this->ui->image_height_spinbox->value()));
+    int new_height = this->ui->image_height_spinbox->value();
+    if (this->fractal.image.size().height() != new_height){
+        this->imageResized(QSize(this->ui->image_width_spinbox->value(), new_height));
+    }
 }
 
 

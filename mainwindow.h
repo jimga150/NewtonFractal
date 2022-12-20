@@ -141,7 +141,7 @@ private slots:
 
     void on_num_roots_spinbox_editingFinished();
 
-    void on_num_iter_hslider_sliderMoved(int newval);
+    void on_num_iter_hslider_sliderMoved(int new_val);
 
     void on_num_iter_spinbox_editingFinished();
 
